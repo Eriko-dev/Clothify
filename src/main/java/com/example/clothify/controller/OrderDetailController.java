@@ -15,9 +15,10 @@ public class OrderDetailController {
     private OrderDetailService orderDetailService;
 
     @GetMapping("/order/{orderId}")
-    public List<OrderDetail> getByOrder(@RequestBody Order order) {
-        return orderDetailService.getByOrder(order);
+    public List<OrderDetail> getByOrder(@PathVariable int orderId) {
+        return orderDetailService.getByOrder(orderId);
     }
+
 
     @PostMapping
     public OrderDetail create(@RequestBody OrderDetail orderDetail) {

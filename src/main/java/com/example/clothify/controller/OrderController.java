@@ -16,9 +16,10 @@ public class OrderController {
     private OrderService orderService;
 
     @GetMapping("/user/{userId}")
-    public List<Order> getOrdersByUser(@RequestBody User user) {
-        return orderService.getOrdersByUser(user);
+    public List<Order> getOrdersByUser(@PathVariable int userId) {
+        return orderService.getOrdersByUser(userId);
     }
+
 
     @PostMapping
     public Order create(@RequestBody Order order) {

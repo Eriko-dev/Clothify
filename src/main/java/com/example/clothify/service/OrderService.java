@@ -13,8 +13,8 @@ public class OrderService {
     @Autowired
     private OrderRepository orderRepository;
 
-    public List<Order> getOrdersByUser(User user){
-        return orderRepository.findByUser(user);
+    public List<Order> getOrdersByUser(int userId) {
+        return orderRepository.findByUserId(userId);
     }
     public Order create(Order order){
         return orderRepository.save(order);

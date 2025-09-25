@@ -13,9 +13,10 @@ public class OrderDetailService {
     @Autowired
     private OrderDetailRepository orderDetailRepository;
 
-    public List<OrderDetail> getByOrder(Order order) {
-        return orderDetailRepository.findByOrder(order);
+    public List<OrderDetail> getByOrder(int orderId) {
+        return orderDetailRepository.findByOrderId(orderId);
     }
+
     public OrderDetail create(OrderDetail orderDetail) {
         return orderDetailRepository.save(orderDetail);
     }

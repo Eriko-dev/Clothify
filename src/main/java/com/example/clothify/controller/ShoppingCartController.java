@@ -1,6 +1,5 @@
 package com.example.clothify.controller;
 
-import com.example.clothify.entity.Product;
 import com.example.clothify.entity.ShoppingCart;
 import com.example.clothify.entity.User;
 import com.example.clothify.service.CartService;
