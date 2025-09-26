@@ -43,7 +43,6 @@ public class SecurityConfig {
                         // Cart & Orders: USER + ADMIN
                         .requestMatchers("/api/cart/**").hasAnyAuthority("USER", "ADMIN")
                         .requestMatchers("/api/orders/**").hasAnyAuthority("USER", "ADMIN")
-
                         .anyRequest().authenticated()
                 );
 
