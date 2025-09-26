@@ -3,6 +3,7 @@ package com.example.clothify.controller;
 import com.example.clothify.entity.Product;
 import com.example.clothify.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +19,20 @@ public class ProductController {
         return productService.getAll();
     }
 
+    @GetMapping("/search")
+    public Page<Product> searchProducts(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String brand,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir
+    ) {
+        return productService.searchProducts(name, category, brand, minPrice, maxPrice, page, size, sortBy, sortDir);
+    }
     @PostMapping
     public Product create(@RequestBody Product product) {
         return productService.create(product);

@@ -4,10 +4,7 @@ package com.example.clothify.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.List;
@@ -41,10 +38,14 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Order> orders;
 
     @OneToMany(mappedBy = "user")
     @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<ShoppingCart> shoppingCart;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -54,6 +55,8 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Set<Role> roles = new HashSet<>();
 
 }

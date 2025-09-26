@@ -33,7 +33,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login").permitAll()
 
                         // Products: USER + ADMIN
-                        .requestMatchers("/api/products/**").hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers("/api/products/**").permitAll()
 
                         // Categories & Users: only ADMIN
                         .requestMatchers("/api/categories/**").hasAuthority("ADMIN")
