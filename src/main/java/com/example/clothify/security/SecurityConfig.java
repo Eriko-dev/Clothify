@@ -10,35 +10,56 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // login & register
+
+                        // Login & Register
                         .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login").permitAll()
 
-                        // tất cả API khác cũng cho phép truy cập mà không cần đăng nhập
-                        .anyRequest().permitAll()
+                        // Products: USER + ADMIN
+                        .requestMatchers("/api/products/**").hasAnyAuthority("USER", "ADMIN")
+
+                        // Categories & Users: only ADMIN
+                        .requestMatchers("/api/categories/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/users/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/order-details/**").hasAuthority("ADMIN")
+
+                        // Cart & Orders: USER + ADMIN
+                        .requestMatchers("/api/cart/**").hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers("/api/orders/**").hasAnyAuthority("USER", "ADMIN")
+
+                        .anyRequest().authenticated()
                 );
+
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-    // Trả về AuthenticationManager làm bean để autowire
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
-    // Cấu hình PasswordEncoder (tạm thời chưa mã hóa password để test)
     @Bean
     public PasswordEncoder passwordEncoder() {
+        // Tạm thời chưa mã hóa password để test
         return NoOpPasswordEncoder.getInstance();
     }
-
 }
