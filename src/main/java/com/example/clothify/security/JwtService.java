@@ -1,55 +1,69 @@
 package com.example.clothify.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
+import com.example.clothify.entity.User;
+import com.nimbusds.jose.*;
+import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jwt.JWTClaimsSet;
 import org.springframework.stereotype.Service;
 
-import java.security.Key;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 @Service
 public class JwtService {
+    private String secretKey ="CV++3595WkUMp+jkq9r4LU/GmKm9qR5pbEIbhuRrv/+uMT9gnRd5eKUUCwf7ZcfwIqKPmDSpwaT8oCsVokoMi11nORfF/IRE0jOcrEnCBH8=";
 
-    private static final String SECRET_KEY = "mySuperSecretKeyForJwt1234567890"; // tối thiểu 256-bit
 
-    private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+    public String generateAccessToken(User user) {
+        Date issueTime = new Date();
+        Date expiredTime = Date.from(issueTime.toInstant().plus(30, ChronoUnit.HOURS));
+
+
+        JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
+
+        JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
+                .subject(user.getEmail())
+                .issueTime(issueTime)
+                .expirationTime(expiredTime)
+                .build();
+
+        Payload payload = new Payload(claimsSet.toJSONObject());
+        JWSObject jwsObject = new JWSObject(header, payload);
+
+        try {
+            JWSSigner signer = new MACSigner(secretKey.getBytes());
+            jwsObject.sign(signer);
+
+
+        } catch (JOSEException e) {
+            throw new RuntimeException("Error while generating JWT", e);
+        }
+        return jwsObject.serialize();
     }
+    public String generateRefreshToken(User user) {
+        Date issueTime = new Date();
+        Date expiredTime = Date.from(issueTime.toInstant().plus(30, ChronoUnit.DAYS));
 
-    // Tạo token
-    public String generateToken(String email) {
-        long expirationMillis = 1000 * 60 * 60 * 24; // 24h
-        return Jwts.builder()
-                .setSubject(email)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expirationMillis))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-                .compact();
-    }
 
-    // Lấy Claims từ token
-    private Claims getClaims(String token) {
-        return Jwts.parser()    // tạo JwtParserBuilder
-                .setSigningKey(getSigningKey()) // đặt key
-                .build()                      // build parser
-                .parseClaimsJws(token)        // parse token
-                .getBody();                   // lấy body (Claims)
-    }
+            JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
-    // Lấy email từ token
-    public String extractEmail(String token) {
-        return getClaims(token).getSubject();
-    }
+            JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
+                    .subject(user.getEmail())
+                    .issueTime(issueTime)
+                    .expirationTime(expiredTime)
+                    .build();
 
-    // Kiểm tra token hợp lệ
-    public boolean isTokenValid(String token, String email) {
-        final String tokenEmail = extractEmail(token);
-        return (tokenEmail.equals(email) && !isTokenExpired(token));
-    }
+            Payload payload = new Payload(claimsSet.toJSONObject());
+            JWSObject jwsObject = new JWSObject(header, payload);
 
-    private boolean isTokenExpired(String token) {
-        return getClaims(token).getExpiration().before(new Date());
+        try {
+            JWSSigner signer = new MACSigner(secretKey.getBytes());
+            jwsObject.sign(signer);
+
+
+        } catch (JOSEException e) {
+            throw new RuntimeException("Error while generating JWT", e);
+        }
+        return jwsObject.serialize();
     }
 }
