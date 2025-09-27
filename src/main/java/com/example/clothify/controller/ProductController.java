@@ -2,6 +2,8 @@ package com.example.clothify.controller;
 
 import com.example.clothify.entity.Product;
 import com.example.clothify.service.ProductService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
@@ -10,11 +12,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
+@Tag(name = "User API", description = "Quản lý sản phẩm")
+
 public class ProductController {
     @Autowired
     private ProductService productService;
 
     @GetMapping
+    @Operation(summary = "Danh sách tất cả sản phẩm", description = "Trả về toàn bộ sản phẩm trong hệ thống")
+
     public List<Product> getAll() {
         return productService.getAll();
     }

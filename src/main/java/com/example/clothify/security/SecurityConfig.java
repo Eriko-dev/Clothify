@@ -43,6 +43,16 @@ public class SecurityConfig {
                         // Cart & Orders: USER + ADMIN
                         .requestMatchers("/api/cart/**").hasAnyAuthority("USER", "ADMIN")
                         .requestMatchers("/api/orders/**").hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**",
+                                "/v3/api-docs",
+                                "/swagger-resources/**",
+                                "/webjars/**"
+                        ).permitAll()
+                        // Cho phép truy cập các API public khác (nếu có)
+                        .requestMatchers("/api/public/**").permitAll()
                         .anyRequest().authenticated()
                 );
 
