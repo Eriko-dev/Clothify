@@ -36,7 +36,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/products/**").permitAll()
 
                         // Categories & Users: only ADMIN
-                        .requestMatchers("/api/categories/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/categories/**").hasAnyAuthority("ADMIN", "MANAGER")
                         .requestMatchers("/api/users/**").hasAuthority("ADMIN")
                         .requestMatchers("/api/order-details/**").hasAuthority("ADMIN")
 
@@ -68,7 +68,6 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // Tạm thời chưa mã hóa password để test
-        return NoOpPasswordEncoder.getInstance();
+        return new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder();
     }
 }
